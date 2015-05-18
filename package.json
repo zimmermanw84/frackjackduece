@@ -1,0 +1,18 @@
+{
+  "name": "frackjackduece",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "scripts": {
+    "dev": "webpack-dev-server --devtool eval --progress --colors --content-base build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsx-loader": "^0.13.2",
+    "node-libs-browser": "^0.5.0",
+    "react": "^0.13.3",
+    "webpack": "^1.9.7",
+    "webpack-dev-server": "^1.8.2"
+  }
+}
