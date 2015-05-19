@@ -1,5 +1,6 @@
 var React = require('react');
 var Game = require('./game');
+var Cards = require('./cards');
 
 "use strict";
 
@@ -23,3 +24,5 @@ var BackButton = React.createClass({
 		)
 	}
 });
+
+Cards.loadFirebase();
