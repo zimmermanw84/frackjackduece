@@ -14,7 +14,7 @@ var TEST_CARD_DATA = [
 
 var cardDBLoader = function() {
 	for (var i=0; i < TEST_CARD_DATA.length; i++) {
-		Deck.set({ 
+		Deck.push({ 
 			id: TEST_CARD_DATA[i].id,
 			name:  TEST_CARD_DATA[i].name,
 			imgUrl:  TEST_CARD_DATA[i].imgUrl
@@ -22,15 +22,11 @@ var cardDBLoader = function() {
 	}
 };
 
-var onComplete = function() {
-	console.log("Success");
-};
-
 var emptyDeck = function() {
-	Deck.remove(onComplete);
+	Deck.push({});
 };
 
 module.exports = {
-	loadFirebase: cardDBLoadier,
+	loadFirebase: cardDBLoader,
 	resetFirebase: emptyDeck, 
 };
