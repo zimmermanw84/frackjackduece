@@ -13,7 +13,7 @@ var resolveRoute = function () {
 			console.log('inside #play');
 			var Play = require('./Play.jsx');
 			React.render(<Play/>, document.getElementById('app'));
-	};	
+	}	
 };
 
 // Resolve route on hash change
