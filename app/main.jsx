@@ -10,7 +10,6 @@ var resolveRoute = function () {
       React.render(<Home/>, document.getElementById('app'));
     });
   } else if (location.hash === '#play') {
-			console.log('inside #play');
 			var Play = require('./Play.jsx');
 			React.render(<Play/>, document.getElementById('app'));
 	}	
