@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var React = require('react');
 var Game = require('./game');
 
@@ -37,7 +38,9 @@ var GameComponent = React.createClass({
 				<DealerHand/>
 				<PlayerHand/>
 				<BackButton/>
-				<StandardGameControls/>
+				<section className="game-buttons">
+					<StandardGameControls/>
+				</section>
 			</div>
 		)
 	}
@@ -92,25 +95,41 @@ var StartGame = React.createClass({
 	}
 });
 
+var BackButton = React.createClass({
+	render: function() {
+		return(
+			<a href="#" className="btn btn-warning" role="button">Back</a>
+		)
+	}
+});
+
 var StandardGameControls = React.createClass({
 	hitPlayer: function() {
 		Game.hitPlayer();
 		React.render(<GameComponent/>, document.getElementById('app'));
 	},
+	stayPlayer: function() {
+		Game.dealerAction();
+		this.setState({display:'none'});	
+		React.render(<GameComponent/>, document.getElementById('app'));
+	},
+	nextHand: function() {
+//		FIXME: BROKEN!
+		var DECK = require('./deck').cardData;
+		var PLAYER_HAND = [];
+		var DEALER_HAND = [];
+		Game.shuffleDeck();
+		Game.dealCards();
+		React.render(<GameComponent/>, document.getElementById('app'));
+	},
 	render: function() {
 		return(
 			<div>
-				<button onClick={this.hitPlayer} className="btn-danger">Hit Me!</button>
-				<button className="btn-info">Stay</button>
+				<button style={this.state} onClick={this.hitPlayer} className="btn-danger">Hit Me!</button>
+				<button style={this.state} onClick={this.stayPlayer} className="btn-info">Stay</button>
+				<button onClick={this.nextHand} className="btn-primary">Next Hand</button>
 			</div>
-		)
-	}
-});
-
-var BackButton = React.createClass({
-	render: function() {
-		return(
-			<a href="#" className="btn btn-warning" role="button">Back</a>
+			
 		)
 	}
 });
