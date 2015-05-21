@@ -1,45 +1,63 @@
 var $ = require('jquery');
 var React = require('react');
-var Game = require('./game');
-
-var DECK = require('./deck').cardData;
-var PLAYER_HAND = Game.PLAYER_HAND;
-var DEALER_HAND = Game.DEALER_HAND;
+var Login = require('./login.jsx');
 
 "use strict";
 
-// console.log('game', Game);
-// console.log('PLAYER_HAND', PLAYER_HAND);
-// Game.shuffleDeck();
-// console.log(DECK);
-
-
 // Top Parent Component
 module.exports = React.createClass({
-	startGame: function() {
-		Game.shuffleDeck();
-		Game.dealCards();
-	},
+
 	render: function() {
 		return(
 			<div>
-				<h1>Play</h1>
-				<StartGame startGame={this.startGame} />
-				<BackButton/>
+				<Login Session={this.props.Session}/>
+				<GameComponent Session={this.props.Session} Game={this.props.Game} DECK={this.props.DECK} />
 			</div>
 		)
 	}
 });
 
 var GameComponent = React.createClass({
+	getInitialState: function() {
+		return {
+			gameControls: {
+				display: 'none'
+			}
+		}
+	},
+	startGame: function() {
+		this.props.Game.shuffleDeck();
+		this.props.Game.dealCards();
+		this.setState({
+			gameControls: {
+				display: 'block'
+			}
+		});
+	},
+	hitPlayer: function() {
+		this.props.Game.hitPlayer();
+		this.setState({});
+	},
+	dealerAction: function() {
+		this.props.Game.dealerAction();
+		this.setState({});
+	},
+	resetGame: function() {
+		this.props.Game.resetGame();
+		this.startGame();
+	},
 	render: function() {
+		var _this = this;
 		return(
 			<div>
-				<DealerHand/>
-				<PlayerHand/>
-				<BackButton/>
-				<section className="game-buttons">
-					<StandardGameControls/>
+					<StartGame startGame={this.startGame} score={this.props.Session.CURRENT_USER.score} />
+					<h2>Card Count: {this.props.Game.DECK.length}</h2>
+					<h2>{this.props.Game.getHandValue(_this.props.Game.DEALER_HAND)}</h2>
+					<DealerHand DEALER_HAND={this.props.Game.DEALER_HAND}/>
+					<h2>{this.props.Game.getHandValue(_this.props.Game.PLAYER_HAND)}</h2>
+					<PlayerHand PLAYER_HAND={this.props.Game.PLAYER_HAND} />
+				<section style={this.state.gameControls}>
+					<StandardGameControls hit={this.hitPlayer} dealerAction={this.dealerAction} resetGame={this.resetGame} />
 				</section>
 			</div>
 		)
@@ -47,16 +65,27 @@ var GameComponent = React.createClass({
 });
 
 var DealerHand = React.createClass({
+	getInitalState: function() {
+		return {
+		}
+	},
 	render: function() {
+		var _this = this;
+		var cardsShowing = [];
+		
+		for(var i = 0; i < (_this.props.DEALER_HAND.length - 1); i++) {
+			cardsShowing[i] = _this.props.DEALER_HAND[i+1];	
+		}
+
 		return(
 			<div>
 				<h1>Dealer Hand</h1>
-				<h2>{Game.getHandValue(DEALER_HAND)}</h2>
 				<ul>
-					{DEALER_HAND.map(function(card) {
-						return <li key={card.id}>
-											Name: {card.name}		
-									 </li>
+					<DealerDownCard downCard={_this.props.DEALER_HAND[0]} dealerHandLength={_this.props.DEALER_HAND.length} />
+					{cardsShowing.map(function(card) {
+					return <li>
+										<Card value={card.value} name={card.name} id={card.id} />
+								</li>
 					})}
 				</ul>
 			</div>		
@@ -65,16 +94,20 @@ var DealerHand = React.createClass({
 });
 
 var PlayerHand = React.createClass({
+	getInitialState: function() {
+		return {
+		}
+	},
 	render: function() {
+		var _this = this;
 		return(
 			<div>
 				<h1>Player Hand</h1>
-				<h2>{Game.getHandValue(PLAYER_HAND)}</h2>				
 				<ul>
-					{PLAYER_HAND.map(function(card) {
-						return <li key={card.id}>
-											Name: {card.name}		
-									 </li>
+				{_this.props.PLAYER_HAND.map(function(card) {
+					return <li>
+										<Card value={card.value} name={card.name} id={card.id} />
+								</li>
 					})}
 				</ul>
 			</div>		
@@ -82,15 +115,57 @@ var PlayerHand = React.createClass({
 	}
 });
 
+var DealerDownCard = React.createClass({
+	render: function() {
+		var downCardName = this.props.downCard == undefined ? "" : this.props.downCard.name;
+		return(
+			<div>
+				<li>{this.props.dealerHandLength === 2 ? "DOWN CARD" : downCardName}</li>
+			</div>
+		)
+	}
+});
+
+var Card = React.createClass({
+	render: function() {
+		return(
+			<div  key={this.props.id}>
+	 			Name: {this.props.name}		
+			</div>
+		)	
+	}
+});
+
 var StartGame = React.createClass({
+	getInitialState: function() {
+		return {
+			startButton: {
+				display: 'block'
+			},
+			score: {
+				display: 'none'
+			}
+		}
+	},
 	hideButtonOnClick: function() {
 		this.props.startGame();
-		this.setState({display:'none'});
-		React.render(<GameComponent/>, document.getElementById('app'));
+		this.setState({
+			startButton: {
+				display: 'none'
+			},
+			score: {
+				display: 'block'
+			}
+		});
 	},
 	render: function() {
 		return(
-			<button style={this.state} onClick={this.hideButtonOnClick} className="btn-success">Start Game</button>
+			<div>
+				<section style={this.state.score}>
+					<h2>Bankroll: {this.props.score}</h2>
+				</section>
+				<button style={this.state.startButton} onClick={this.hideButtonOnClick} className="btn-success">Start Game</button>
+			</div>
 		)
 	}
 });
@@ -104,30 +179,47 @@ var BackButton = React.createClass({
 });
 
 var StandardGameControls = React.createClass({
+	getInitialState: function() {
+		return {
+			hitStay: {
+				display: 'inline-block'
+			},
+			nextHand: {
+				display: 'none'
+			},
+		}
+	},
 	hitPlayer: function() {
-		Game.hitPlayer();
-		React.render(<GameComponent/>, document.getElementById('app'));
+		this.props.hit();
 	},
 	stayPlayer: function() {
-		Game.dealerAction();
-		this.setState({display:'none'});	
-		React.render(<GameComponent/>, document.getElementById('app'));
+		this.props.dealerAction();
+		this.setState({
+			hitStay: {
+				display: 'none'
+			},
+			nextHand: {
+				display: 'block'
+			}
+		});	
 	},
-	nextHand: function() {
-//		FIXME: BROKEN!
-		var DECK = require('./deck').cardData;
-		var PLAYER_HAND = [];
-		var DEALER_HAND = [];
-		Game.shuffleDeck();
-		Game.dealCards();
-		React.render(<GameComponent/>, document.getElementById('app'));
+	resetHand: function() {
+		this.props.resetGame();
+		this.setState({
+			hitStay: {
+				display: 'block'
+			},
+			nextHand: {
+				display: 'none'
+			}
+		});	
 	},
 	render: function() {
 		return(
 			<div>
-				<button style={this.state} onClick={this.hitPlayer} className="btn-danger">Hit Me!</button>
-				<button style={this.state} onClick={this.stayPlayer} className="btn-info">Stay</button>
-				<button onClick={this.nextHand} className="btn-primary">Next Hand</button>
+				<button style={this.state.hitStay} onClick={this.hitPlayer} className="btn-danger">Hit Me!</button>
+				<button style={this.state.hitStay} onClick={this.stayPlayer} className="btn-info">Stay</button>
+				<button style={this.state.nextHand} onClick={this.resetHand} className="btn-primary">Next Hand</button>
 			</div>
 			
 		)

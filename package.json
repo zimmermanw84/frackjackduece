@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "MD5": "^1.2.2",
     "css-loader": "^0.12.1",
     "file-loader": "^0.8.1",
     "jsx-loader": "^0.13.2",

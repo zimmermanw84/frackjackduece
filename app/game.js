@@ -14,9 +14,16 @@ var	importedCards = require('./deck');
 // Wagering
 // Game is over when current user's bankroll is 0
 
-var DECK = importedCards.cardData;
+var DECK = [];
 var PLAYER_HAND = [];
 var DEALER_HAND = [];
+
+// Load Deck
+var loadDeck = function() {
+	for(var i = 0; i < importedCards.cardData.length; i++) {
+		DECK[i] = importedCards.cardData[i];
+	}
+};
 
 var shuffleDeck = function() { 
   for(var j, x, i = DECK.length; i; j = Math.floor(Math.random() * i), x = DECK[--i], DECK[i] = DECK[j], DECK[j] = x);
@@ -40,10 +47,10 @@ var getHandValue = function(hand) {
 	for(var i = 0; i < hand.length; i++) {
 		value += hand[i].value;
 
-		// Soft Ace Case: version one. WIP
+		// Soft Ace Case: version one. WIP. If Hand gets two ACE's it's 22
 		if(hand[i].value === 0) {
 
-			if(hand.length === 2) {
+			if(hand.length === 2 && value < 21) {
 				value += 11;
 			} else if(value > 21) {
 				value += 1;
@@ -62,10 +69,31 @@ var hitPlayer = function() {
 };
 
 var dealerAction = function() {
-	while(getHandValue(DEALER_HAND) <= 17) {
-		DEALER_HAND.push( DECK.pop() );
+	while(getHandValue(DEALER_HAND) < 17) {
+//		setTimout(function(){
+			DEALER_HAND.push( DECK.pop() );
+	//	}, 300)
 	}	
 };
+
+var emptyBothHands = function() {
+	var handWithMostCards = PLAYER_HAND > DEALER_HAND ? PLAYER_HAND : DEALER_HAND;
+
+	for(var i = 0; i < handWithMostCards.length; i++) {
+		PLAYER_HAND.pop();
+		DEALER_HAND.pop();
+	}
+
+};
+
+var resetGame = function() {
+	loadDeck();
+	emptyBothHands();
+};
+
+
+
+loadDeck();
 
 //shuffleDeck();
 //dealCards();
@@ -87,4 +115,6 @@ module.exports = {
 	shuffleDeck: shuffleDeck,
 	PLAYER_HAND: PLAYER_HAND,
 	DEALER_HAND: DEALER_HAND,
+	resetGame: resetGame,
+	DECK: DECK,
 };
