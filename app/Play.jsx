@@ -55,7 +55,9 @@ var GameComponent = React.createClass({
 		this.startGame();
 	},
 	resolveAction: function() {
-		this.props.Game.actionComplete();
+		this.dealerAction();
+		this.settleWager();
+		this.setState({});
 	},
 	makeWager: function(wager) {
 		this.props.Game.makeWager(this.props.Session.CURRENT_USER, wager);
@@ -63,7 +65,7 @@ var GameComponent = React.createClass({
 		this.setState({});
 	},
 	settleWager: function() {
-		
+		this.props.Game.settleAllBets();
 	},
 	render: function() {
 		var _this = this;
@@ -196,15 +198,22 @@ var BackButton = React.createClass({
 });
 
 var MakeWager = React.createClass({
+	getInitialState: function() {
+		return {
+			display: {
+				display: 'none' ? 'block' : 'none'
+			}
+		}
+	},
 	handleWagerEvent: function(event) {
 		event.preventDefault();
     var wager = React.findDOMNode(this.refs.wager).value.trim();
-		this.props.makeWager(wager);
-		console.log("wager", wager);
+		this.props.makeWager( parseInt(wager) );
+		console.log("wager", parseInt(wager)  );
 	},
 	render: function() {
 		return(
-			<div>
+			<div style={this.state.display}>
 				<h2>Make Wager</h2>
 				<form onSubmit={this.handleWagerEvent}>
 					<input type="number" ref="wager"/>
@@ -231,7 +240,6 @@ var StandardGameControls = React.createClass({
 	},
 	stayPlayer: function() {
 		this.props.resolveAction();
-		this.props.dealerAction();
 		this.setState({
 			hitStay: {
 				display: 'none'

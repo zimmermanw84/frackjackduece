@@ -88,7 +88,6 @@ var dealerAction = function() {
 };
 
 var makeWager = function(user, wager) {
-	user.score -= wager;
 	CURRENT_WAGER += wager;
 };
 
@@ -103,12 +102,14 @@ var endHand = function() {
 var declareWinner = function() {
 	if(!isHandOver) {
 		throw "ERROR: Cannot declare winner, hand is not over";
-		return;
 	}
 
 	var playerHandValue = getHandValue(PLAYER_HAND);
 	var dealerHandValue = getHandValue(DEALER_HAND);
 	
+	console.log("playerHandValue in declare", playerHandValue)
+	console.log("dealerHandValue in declare", dealerHandValue)
+
 	if(playerHandValue === dealerHandValue) {
 		return "Push";
 	}
@@ -120,6 +121,44 @@ var declareWinner = function() {
 	if(playerHandValue < dealerHandValue && dealerHandValue < 22) {
 		return "Dealer";
 	}
+
+	if(playerHandValue < 22 && dealerHandValue < 22) {
+		return "Dealer";
+	}
+
+	if(playerHandValue < 22) {
+		return "Dealer";
+	}
+
+	if(dealerHandValue < 22) {
+		return "Player";
+	}
+};
+
+var settleAllBets = function() {
+	endHand();
+	var winner = declareWinner();
+	var wager = CURRENT_WAGER;
+	var CURRENT_USER = Session.CURRENT_USER;
+	console.log('winner in settleAllBets', winner)
+	if(!winner) {
+		throw "ERROR: There must be a winner to pay out";
+	}
+
+	switch(winner) {
+		case "Player":
+			console.log("inside Player and wager", CURRENT_WAGER)
+			CURRENT_USER.score += CURRENT_WAGER;
+			break;
+		case "Dealer":
+			console.log('inside Dealer and wager', CURRENT_WAGER)
+			CURRENT_USER.score -= CURRENT_WAGER;
+			break;
+		case "Push":
+			break;
+	}
+
+	CURRENT_WAGER = 0;
 };
 
 var emptyBothHands = function() {
@@ -179,5 +218,6 @@ module.exports = {
 	makeWager: makeWager,
 	CURRENT_WAGER: CURRENT_WAGER,
 	endHand: endHand,
-	declareWinner: declareWinner
+	declareWinner: declareWinner,
+	settleAllBets: settleAllBets
 };
