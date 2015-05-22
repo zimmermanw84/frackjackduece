@@ -47,6 +47,15 @@ var GameComponent = React.createClass({
 		this.props.Game.resetGame();
 		this.startGame();
 	},
+	resolveAction: function() {
+		this.props.Game.actionComplete();
+	},
+	makeWager: function() {
+		
+	},
+	settleWager: function() {
+		
+	},
 	render: function() {
 		var _this = this;
 		return(
@@ -58,7 +67,7 @@ var GameComponent = React.createClass({
 					<h2>{this.props.Game.getHandValue(_this.props.Game.PLAYER_HAND)}</h2>
 					<PlayerHand PLAYER_HAND={this.props.Game.PLAYER_HAND}/>
 				<section style={this.state.gameControls}>
-					<StandardGameControls hit={this.hitPlayer} dealerAction={this.dealerAction} resetGame={this.resetGame} />
+					<StandardGameControls hit={this.hitPlayer} dealerAction={this.dealerAction} resetGame={this.resetGame} resolveAction={this.resolveAction} />
 				</section>
 			</div>
 		)
@@ -119,7 +128,6 @@ var PlayerHand = React.createClass({
 var DealerDownCard = React.createClass({
 	render: function() {
 		var downCardName = this.props.downCard == undefined ? "" : this.props.downCard.name;
-		console.log(this.props.isDealerAction)
 		return(
 			<div>
 				<li>{this.props.isDealerAction ? downCardName : "DOWN CARD"}</li>
@@ -195,7 +203,7 @@ var StandardGameControls = React.createClass({
 		this.props.hit();
 	},
 	stayPlayer: function() {
-//		this.props.resolveAction();
+		this.props.resolveAction();
 		this.props.dealerAction();
 		this.setState({
 			hitStay: {

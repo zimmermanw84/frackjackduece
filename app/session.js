@@ -7,6 +7,7 @@ var MD5 = require('MD5');
 var CURRENT_USER = {
 	email: null,
 	score: 2000,
+	handCount: 0,
 	hash: null,
 };
 

@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var	importedCards = require('./deck');
+var Session = require('./session');
 
 "use strict";
 
@@ -17,6 +18,8 @@ var	importedCards = require('./deck');
 var DECK = [];
 var PLAYER_HAND = [];
 var DEALER_HAND = [];
+var CURRENT_WAGER = 0;
+var isHandOver = false;
 
 var ACTIONTRACKER = {
 	dealerTurn: false,
@@ -48,7 +51,7 @@ var dealCards = function() {
 var getHandValue = function(hand) {
 	var value = 0;
 
-	hand.sort(function(a, b){
+	hand.sort(function(a, b) {
  		return b.value-a.value;
 	});
 
@@ -58,7 +61,7 @@ var getHandValue = function(hand) {
 		// Soft Ace Case: version one. WIP. If Hand gets two ACE's it's 22
 		if(hand[i].value === 0) {
 
-			if(hand.length === 2 && value < 21) {
+			if(hand.length === 2 && value < 11) {
 				value += 11;
 			} else if(value > 21) {
 				value += 1;
@@ -78,9 +81,23 @@ var hitPlayer = function() {
 
 var dealerAction = function() {
 	actionComplete();
+	
 	while(getHandValue(DEALER_HAND) < 17) {
 			DEALER_HAND.push( DECK.pop() );
 	}	
+};
+
+var makeWager = function(user, wager) {
+	user.score -= wager;
+	CURRENT_WAGER += wager;
+};
+
+var isGameOver = function(user) {
+	return user.score <= 0 || user.handCount >= 5 ? true : false; 
+};
+
+var endHand = function() {
+	isHandOver = true;
 };
 
 var emptyBothHands = function() {
@@ -100,14 +117,22 @@ var resetGame = function() {
 };
 
 
-
 loadDeck();
 
+// DRIVER TEST CODE
 //shuffleDeck();
 //dealCards();
 //hitPlayer();
 //hitPlayer();
 //dealerAction();
+
+// var user = Session.CURRENT_USER;
+// console.log('isGameOver', isGameOver(user) );
+// console.log('before wager', CURRENT_WAGER, user.score);
+// makeWager(user, 1000);
+// console.log('after wager', CURRENT_WAGER, user.score);
+// user.handCount += 5;
+// console.log('isGameOver', isGameOver(user) );
 
 // console.log("Deck count" ,DECK.length );
 // console.log("player", PLAYER_HAND);
@@ -126,5 +151,10 @@ module.exports = {
 	resetGame: resetGame,
 	DECK: DECK,
 	ACTIONTRACKER: ACTIONTRACKER,
-	actionComplete: actionComplete
+	actionComplete: actionComplete,
+	isGameOver: isGameOver,
+	isHandOver: isHandOver,
+	makeWager: makeWager,
+	CURRENT_WAGER: CURRENT_WAGER,
+	endHand: endHand
 };
