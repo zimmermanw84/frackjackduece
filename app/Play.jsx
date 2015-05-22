@@ -6,7 +6,6 @@ var Login = require('./login.jsx');
 
 // Top Parent Component
 module.exports = React.createClass({
-
 	render: function() {
 		return(
 			<div>
@@ -21,6 +20,9 @@ var GameComponent = React.createClass({
 	getInitialState: function() {
 		return {
 			gameControls: {
+				display: 'none'
+			},
+			makeWager: {
 				display: 'none'
 			}
 		}
@@ -41,7 +43,12 @@ var GameComponent = React.createClass({
 	dealerAction: function() {
 		this.props.Game.dealerAction();
 		this.props.Game.actionComplete();
-		this.setState({});
+		this.setState({
+			makeWager: {
+				display: 'block'
+			}
+		});
+		
 	},
 	resetGame: function() {
 		this.props.Game.resetGame();
@@ -50,8 +57,10 @@ var GameComponent = React.createClass({
 	resolveAction: function() {
 		this.props.Game.actionComplete();
 	},
-	makeWager: function() {
-		
+	makeWager: function(wager) {
+		this.props.Game.makeWager(this.props.Session.CURRENT_USER, wager);
+		console.log("top level wager", this.props.Session.CURRENT_USER.score);
+		this.setState({});
 	},
 	settleWager: function() {
 		
@@ -60,7 +69,11 @@ var GameComponent = React.createClass({
 		var _this = this;
 		return(
 			<div>
-					<StartGame startGame={this.startGame} score={this.props.Session.CURRENT_USER.score} />
+					<h2>Bankroll: {this.props.Session.CURRENT_USER.score}</h2>
+					<section style={this.state.makeWager}>
+						<MakeWager makeWager={this.makeWager}/>
+					</section>
+					<StartGame startGame={this.startGame} score={this.props.Session.CURRENT_USER.score} makeWager={this.makeWager} />
 					<h2>Card Count: {this.props.Game.DECK.length}</h2>
 					<h2>{this.props.Game.getHandValue(_this.props.Game.DEALER_HAND)}</h2>
 					<DealerHand DEALER_HAND={this.props.Game.DEALER_HAND} isDealerAction={this.props.Game.ACTIONTRACKER.dealerTurn} />
@@ -152,9 +165,6 @@ var StartGame = React.createClass({
 			startButton: {
 				display: 'block'
 			},
-			score: {
-				display: 'none'
-			}
 		}
 	},
 	hideButtonOnClick: function() {
@@ -163,18 +173,15 @@ var StartGame = React.createClass({
 			startButton: {
 				display: 'none'
 			},
-			score: {
-				display: 'block'
-			}
 		});
 	},
 	render: function() {
 		return(
 			<div>
-				<section style={this.state.score}>
-					<h2>Bankroll: {this.props.score}</h2>
+				<section style={this.state.startButton}>
+				<MakeWager makeWager={this.props.makeWager}/>
+				<button onClick={this.hideButtonOnClick} className="btn-success">Start Game</button>
 				</section>
-				<button style={this.state.startButton} onClick={this.hideButtonOnClick} className="btn-success">Start Game</button>
 			</div>
 		)
 	}
@@ -184,6 +191,26 @@ var BackButton = React.createClass({
 	render: function() {
 		return(
 			<a href="#" className="btn btn-warning" role="button">Back</a>
+		)
+	}
+});
+
+var MakeWager = React.createClass({
+	handleWagerEvent: function(event) {
+		event.preventDefault();
+    var wager = React.findDOMNode(this.refs.wager).value.trim();
+		this.props.makeWager(wager);
+		console.log("wager", wager);
+	},
+	render: function() {
+		return(
+			<div>
+				<h2>Make Wager</h2>
+				<form onSubmit={this.handleWagerEvent}>
+					<input type="number" ref="wager"/>
+					<input type="submit"/>
+				</form>
+			</div>
 		)
 	}
 });

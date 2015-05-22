@@ -58,7 +58,7 @@ var getHandValue = function(hand) {
 	for(var i = 0; i < hand.length; i++) {
 		value += hand[i].value;
 
-		// Soft Ace Case: version one. WIP. If Hand gets two ACE's it's 22
+		// Soft Ace Case: version one. WIP: Resolved for now
 		if(hand[i].value === 0) {
 
 			if(hand.length === 2 && value < 11) {
@@ -98,6 +98,28 @@ var isGameOver = function(user) {
 
 var endHand = function() {
 	isHandOver = true;
+};
+
+var declareWinner = function() {
+	if(!isHandOver) {
+		throw "ERROR: Cannot declare winner, hand is not over";
+		return;
+	}
+
+	var playerHandValue = getHandValue(PLAYER_HAND);
+	var dealerHandValue = getHandValue(DEALER_HAND);
+	
+	if(playerHandValue === dealerHandValue) {
+		return "Push";
+	}
+
+	if(playerHandValue > dealerHandValue && playerHandValue < 22) {
+		return "Player";
+	}
+	
+	if(playerHandValue < dealerHandValue && dealerHandValue < 22) {
+		return "Dealer";
+	}
 };
 
 var emptyBothHands = function() {
@@ -156,5 +178,6 @@ module.exports = {
 	isHandOver: isHandOver,
 	makeWager: makeWager,
 	CURRENT_WAGER: CURRENT_WAGER,
-	endHand: endHand
+	endHand: endHand,
+	declareWinner: declareWinner
 };
