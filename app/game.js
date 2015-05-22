@@ -18,6 +18,14 @@ var DECK = [];
 var PLAYER_HAND = [];
 var DEALER_HAND = [];
 
+var ACTIONTRACKER = {
+	dealerTurn: false,
+};
+
+var actionComplete = function() {
+	ACTIONTRACKER.dealerTurn = ACTIONTRACKER.dealerTurn ? false : true;
+};
+
 // Load Deck
 var loadDeck = function() {
 	for(var i = 0; i < importedCards.cardData.length; i++) {
@@ -69,10 +77,9 @@ var hitPlayer = function() {
 };
 
 var dealerAction = function() {
+	actionComplete();
 	while(getHandValue(DEALER_HAND) < 17) {
-//		setTimout(function(){
 			DEALER_HAND.push( DECK.pop() );
-	//	}, 300)
 	}	
 };
 
@@ -87,6 +94,7 @@ var emptyBothHands = function() {
 };
 
 var resetGame = function() {
+	actionComplete();
 	loadDeck();
 	emptyBothHands();
 };
@@ -117,4 +125,6 @@ module.exports = {
 	DEALER_HAND: DEALER_HAND,
 	resetGame: resetGame,
 	DECK: DECK,
+	ACTIONTRACKER: ACTIONTRACKER,
+	actionComplete: actionComplete
 };

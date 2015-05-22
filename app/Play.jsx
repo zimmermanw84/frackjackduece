@@ -40,6 +40,7 @@ var GameComponent = React.createClass({
 	},
 	dealerAction: function() {
 		this.props.Game.dealerAction();
+		this.props.Game.actionComplete();
 		this.setState({});
 	},
 	resetGame: function() {
@@ -53,9 +54,9 @@ var GameComponent = React.createClass({
 					<StartGame startGame={this.startGame} score={this.props.Session.CURRENT_USER.score} />
 					<h2>Card Count: {this.props.Game.DECK.length}</h2>
 					<h2>{this.props.Game.getHandValue(_this.props.Game.DEALER_HAND)}</h2>
-					<DealerHand DEALER_HAND={this.props.Game.DEALER_HAND}/>
+					<DealerHand DEALER_HAND={this.props.Game.DEALER_HAND} isDealerAction={this.props.Game.ACTIONTRACKER.dealerTurn} />
 					<h2>{this.props.Game.getHandValue(_this.props.Game.PLAYER_HAND)}</h2>
-					<PlayerHand PLAYER_HAND={this.props.Game.PLAYER_HAND} />
+					<PlayerHand PLAYER_HAND={this.props.Game.PLAYER_HAND}/>
 				<section style={this.state.gameControls}>
 					<StandardGameControls hit={this.hitPlayer} dealerAction={this.dealerAction} resetGame={this.resetGame} />
 				</section>
@@ -72,7 +73,7 @@ var DealerHand = React.createClass({
 	render: function() {
 		var _this = this;
 		var cardsShowing = [];
-		
+
 		for(var i = 0; i < (_this.props.DEALER_HAND.length - 1); i++) {
 			cardsShowing[i] = _this.props.DEALER_HAND[i+1];	
 		}
@@ -81,7 +82,7 @@ var DealerHand = React.createClass({
 			<div>
 				<h1>Dealer Hand</h1>
 				<ul>
-					<DealerDownCard downCard={_this.props.DEALER_HAND[0]} dealerHandLength={_this.props.DEALER_HAND.length} />
+					<DealerDownCard downCard={this.props.DEALER_HAND[0]} isDealerAction={this.props.isDealerAction} />
 					{cardsShowing.map(function(card) {
 					return <li>
 										<Card value={card.value} name={card.name} id={card.id} />
@@ -118,9 +119,10 @@ var PlayerHand = React.createClass({
 var DealerDownCard = React.createClass({
 	render: function() {
 		var downCardName = this.props.downCard == undefined ? "" : this.props.downCard.name;
+		console.log(this.props.isDealerAction)
 		return(
 			<div>
-				<li>{this.props.dealerHandLength === 2 ? "DOWN CARD" : downCardName}</li>
+				<li>{this.props.isDealerAction ? downCardName : "DOWN CARD"}</li>
 			</div>
 		)
 	}
@@ -193,6 +195,7 @@ var StandardGameControls = React.createClass({
 		this.props.hit();
 	},
 	stayPlayer: function() {
+//		this.props.resolveAction();
 		this.props.dealerAction();
 		this.setState({
 			hitStay: {
