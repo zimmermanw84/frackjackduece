@@ -42,13 +42,11 @@ var GameComponent = React.createClass({
 	},
 	dealerAction: function() {
 		this.props.Game.dealerAction();
-		this.props.Game.actionComplete();
 		this.setState({
 			makeWager: {
 				display: 'block'
 			}
 		});
-		
 	},
 	resetGame: function() {
 		this.props.Game.resetGame();
@@ -68,7 +66,6 @@ var GameComponent = React.createClass({
 		this.props.Game.settleAllBets();
 	},
 	render: function() {
-		var _this = this;
 		return(
 			<div>
 					<h2>Bankroll: {this.props.Session.CURRENT_USER.score}</h2>
@@ -77,9 +74,9 @@ var GameComponent = React.createClass({
 					</section>
 					<StartGame startGame={this.startGame} score={this.props.Session.CURRENT_USER.score} makeWager={this.makeWager} />
 					<h2>Card Count: {this.props.Game.DECK.length}</h2>
-					<h2>{this.props.Game.getHandValue(_this.props.Game.DEALER_HAND)}</h2>
+					<h2>{this.props.Game.getHandValue(this.props.Game.DEALER_HAND)}</h2>
 					<DealerHand DEALER_HAND={this.props.Game.DEALER_HAND} isDealerAction={this.props.Game.ACTIONTRACKER.dealerTurn} />
-					<h2>{this.props.Game.getHandValue(_this.props.Game.PLAYER_HAND)}</h2>
+					<h2>{this.props.Game.getHandValue(this.props.Game.PLAYER_HAND)}</h2>
 					<PlayerHand PLAYER_HAND={this.props.Game.PLAYER_HAND}/>
 				<section style={this.state.gameControls}>
 					<StandardGameControls hit={this.hitPlayer} dealerAction={this.dealerAction} resetGame={this.resetGame} resolveAction={this.resolveAction} />
