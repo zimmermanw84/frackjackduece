@@ -14,6 +14,7 @@ var Session = require('./session');
 // Declare winner
 // Wagering
 // Game is over when current user's bankroll is 0
+// Validate Wager form - can't bet more > bankroll - can't be empty
 
 var DECK = [];
 var PLAYER_HAND = [];
@@ -126,16 +127,16 @@ var declareWinner = function() {
 		return "Dealer";
 	}
 
-	if(playerHandValue < 22) {
+	if(playerHandValue > 21) {
 		return "Dealer";
 	}
 
-	if(dealerHandValue < 22) {
+	if(dealerHandValue > 21) {
 		return "Player";
 	}
 };
 
-var settleAllBets = function() {
+var settleAllBets = function(stuff) {
 	endHand();
 	var winner = declareWinner();
 	var wager = CURRENT_WAGER;
@@ -168,7 +169,6 @@ var emptyBothHands = function() {
 		PLAYER_HAND.pop();
 		DEALER_HAND.pop();
 	}
-
 };
 
 var resetGame = function() {
