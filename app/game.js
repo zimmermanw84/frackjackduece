@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var	importedCards = require('./deck');
+var importedCards = require('./deck');
 var Session = require('./session');
 
 "use strict";
