@@ -80,6 +80,7 @@ var GameComponent = React.createClass({
 					<PlayerHand PLAYER_HAND={this.props.Game.PLAYER_HAND}/>
 				<section style={this.state.gameControls}>
 					<StandardGameControls hit={this.hitPlayer} dealerAction={this.dealerAction} resetGame={this.resetGame} resolveAction={this.resolveAction} />
+					<GameResults/>
 				</section>
 			</div>
 		)
@@ -216,6 +217,16 @@ var MakeWager = React.createClass({
 					<input type="number" ref="wager"/>
 					<input type="submit"/>
 				</form>
+			</div>
+		)
+	}
+});
+
+var GameResults = React.createClass({
+	render: function() {
+		return (
+			<div>
+				<h2>Game Results</h2>
 			</div>
 		)
 	}
