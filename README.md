@@ -4,6 +4,8 @@
 - Why does Vim double indent my code?... (not on client) Only on GitHub.
 	I am currently looking to resolve this. If anyone reading this has/or is familure with this please contact me :)
 
+- Realization - Should have used Flux... Seriously.
+
 ##Tech:
 
 - React

@@ -158,7 +158,6 @@ var Card = React.createClass({
 		)	
 	}
 });
-
 var StartGame = React.createClass({
 	getInitialState: function() {
 		return {
